@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   // ---------- Petal mark (logo-derived geometry) ----------
-  // 8 petals at 45deg increments, alternating two gray tones, plus dark center star
   function renderPetalMark(svgEl, scattered) {
-    if (!svgEl) return; // 👈 FIX CRASH
+    if (!svgEl) return; // Safely returns if element doesn't exist
 
     const ns = "http://www.w3.org/2000/svg";
     svgEl.innerHTML = "";
@@ -30,66 +29,89 @@ document.addEventListener("DOMContentLoaded", function () {
     svgEl.appendChild(g);
   }
 
-  // Render all the static (formed) petal marks across the page
+  // Render static elements safely
   document.querySelectorAll('#nav-petal, #work-petal, .team-petal, #done-petal, #footer-petal')
     .forEach(el => renderPetalMark(el, false));
 
-  // Hero petal: starts scattered, animates to formed
+  // Hero petal setup with safe guard checks
   const heroSvg = document.getElementById('hero-petal');
-  renderPetalMark(heroSvg, true);
-  setTimeout(() => {
-    renderPetalMark(heroSvg, false);
-    document.getElementById('hero-mark-spin').classList.add('formed');
-  }, 250);
+  if (heroSvg) {
+    renderPetalMark(heroSvg, true);
+    setTimeout(() => {
+      renderPetalMark(heroSvg, false);
+      const spinner = document.getElementById('hero-mark-spin');
+      if (spinner) spinner.classList.add('formed');
+    }, 250);
+  }
 
-  // ---------- Nav scroll state ----------
+  // ---------- Nav scroll state with guard ----------
   const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 24) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  });
+  if (nav) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 24) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+  }
 
-  // ---------- Contact form ----------
-emailjs.init("WIXCPCAJ5LHk6s6Np");
+  // ---------- Contact form with safety checks ----------
+  // Check if EmailJS is loaded globally first
+  if (typeof emailjs !== "undefined") {
+    emailjs.init("WIXCPCAJ5LHk6s6Np");
+  } else {
+    console.warn("EmailJS SDK is missing. Form submissions won't work.");
+  }
 
-const form = document.getElementById("contact-form");
-const done = document.getElementById("contact-done");
+  const form = document.getElementById("contact-form");
+  const done = document.getElementById("contact-done");
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+  // Only bind the submit event if the form exists on the current page
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      console.log("FORM SUBMITTED");
 
-  console.log("FORM SUBMITTED");
+      const submitBtn = form.querySelector("button");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
+      }
 
-  const submitBtn = form.querySelector("button");
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Sending...";
+      // Quick check to ensure form inputs actually exist with these names
+      const nameVal = form.name ? form.name.value : "";
+      const businessVal = form.business ? form.business.value : "";
+      const emailVal = form.email ? form.email.value : "";
+      const messageVal = form.message ? form.message.value : "";
 
-  emailjs.send(
-    "service_poddp8p",
-    "template_f9detvj",
-    {
-      name: form.name.value,
-      business: form.business.value,
-      email: form.email.value,
-      message: form.message.value
-    }
-  )
-  .then((res) => {
-    console.log("SUCCESS", res);
-
-    form.classList.add("hide");
-    done.classList.add("show");
-  })
-  .catch((err) => {
-    console.log("ERROR", err);
-    alert("Failed to send message. Check console.");
-  })
-  .finally(() => {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Send message";
-  });
-});
+      if (typeof emailjs !== "undefined") {
+        emailjs.send(
+          "service_poddp8p",
+          "template_f9detvj",
+          {
+            name: nameVal,
+            business: businessVal,
+            email: emailVal,
+            message: messageVal
+          }
+        )
+        .then((res) => {
+          console.log("SUCCESS", res);
+          form.classList.add("hide");
+          if (done) done.classList.add("show");
+        })
+        .catch((err) => {
+          console.log("ERROR", err);
+          alert("Failed to send message. Check console.");
+        })
+        .finally(() => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Send message";
+          }
+        });
+      }
+    });
+  }
 });
