@@ -2,6 +2,8 @@
   // ---------- Petal mark (logo-derived geometry) ----------
   // 8 petals at 45deg increments, alternating two gray tones, plus dark center star
   function renderPetalMark(svgEl, scattered) {
+    if (!svgEl) return; // 👈 FIX CRASH
+
     const ns = "http://www.w3.org/2000/svg";
     svgEl.innerHTML = "";
     const g = document.createElementNS(ns, "g");
