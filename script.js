@@ -1,4 +1,4 @@
-
+document.addEventListener("DOMContentLoaded", function () {
   // ---------- Petal mark (logo-derived geometry) ----------
   // 8 petals at 45deg increments, alternating two gray tones, plus dark center star
   function renderPetalMark(svgEl, scattered) {
@@ -91,4 +91,5 @@ form.addEventListener("submit", function (e) {
     submitBtn.disabled = false;
     submitBtn.textContent = "Send message";
   });
+});
 });
