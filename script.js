@@ -53,19 +53,42 @@
   });
 
   // ---------- Contact form ----------
-  console.log("FORM SUBMITTED");
-  console.log("FORM SUBMIT TRIGGERED");
+emailjs.init("WIXCPCAJ5LHk6s6Np");
 
-emailjs.send(
-  "YOUR_SERVICE_ID",
-  "YOUR_TEMPLATE_ID",
-  {
-    name: "test",
-    business: "test",
-    email: "test@test.com",
-    message: "hello"
-  }
-).then(
-  res => console.log("SUCCESS", res),
-  err => console.log("ERROR", err)
-);
+const form = document.getElementById("contact-form");
+const done = document.getElementById("contact-done");
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  console.log("FORM SUBMITTED");
+
+  const submitBtn = form.querySelector("button");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Sending...";
+
+  emailjs.send(
+    "service_poddp8p",
+    "template_f9detvj",
+    {
+      name: form.name.value,
+      business: form.business.value,
+      email: form.email.value,
+      message: form.message.value
+    }
+  )
+  .then((res) => {
+    console.log("SUCCESS", res);
+
+    form.classList.add("hide");
+    done.classList.add("show");
+  })
+  .catch((err) => {
+    console.log("ERROR", err);
+    alert("Failed to send message. Check console.");
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Send message";
+  });
+});
