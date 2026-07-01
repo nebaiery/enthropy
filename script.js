@@ -52,6 +52,7 @@
 
   // ---------- Contact form ----------
   console.log("FORM SUBMITTED");
+  console.log("FORM SUBMIT TRIGGERED");
 
 emailjs.send(
   "YOUR_SERVICE_ID",
