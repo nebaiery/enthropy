@@ -51,34 +51,18 @@
   });
 
   // ---------- Contact form ----------
-  emailjs.init("WIXCPCAJ5LHk6s6Np");
+  console.log("FORM SUBMITTED");
 
-const form = document.getElementById("contact-form");
-const done = document.getElementById("contact-done");
-
-form.addEventListener("submit", function(e){
-
-    e.preventDefault();
-
-    emailjs.sendForm(
-
-        "service_poddp8p",
-
-        "template_f9detvj",
-
-        this
-
-    ).then(function(){
-
-        form.classList.add("hide");
-        done.classList.add("show");
-
-    }).catch(function(error){
-
-        alert("Failed to send message.");
-
-        console.log(error);
-
-    });
-
-});
+emailjs.send(
+  "YOUR_SERVICE_ID",
+  "YOUR_TEMPLATE_ID",
+  {
+    name: "test",
+    business: "test",
+    email: "test@test.com",
+    message: "hello"
+  }
+).then(
+  res => console.log("SUCCESS", res),
+  err => console.log("ERROR", err)
+);
